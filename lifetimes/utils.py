@@ -209,7 +209,7 @@ def calculate_alive_path(model, transactions, datetime_col, t, freq='D'):
     return customer_history.apply(lambda row: model.conditional_probability_alive(row['frequency'], row['recency'], row['T']), axis=1)
 
 
-def _fit(minimizing_function, minimizing_function_args, iterative_fitting, initial_params, params_size, disp):
+def _fit(minimizing_function, minimizing_function_args, iterative_fitting, initial_params, params_size, disp, exp_scale = 0.5):
     ll = []
     sols = []
     methods = ['Nelder-Mead', 'Powell', 'BFGS']
@@ -219,7 +219,7 @@ def _fit(minimizing_function, minimizing_function_args, iterative_fitting, initi
 
     for i in range(iterative_fitting + 1):
         fit_method = methods[i % len(methods)]
-        params_init = np.random.exponential(0.5, size=params_size) if initial_params is None else initial_params
+        params_init = np.random.exponential(exp_scale, size=params_size) if initial_params is None else initial_params
         output = minimize(_func_caller, method=fit_method, tol=1e-6,
                           x0=params_init, args=(minimizing_function_args, minimizing_function), options={'disp': disp})
         ll.append(output.fun)

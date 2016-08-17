@@ -261,7 +261,7 @@ class GammaGammaFitter(BaseFitter):
         p, q, v = self._unload_params('p', 'q', 'v')
         return (((q - 1) / (p * x + q - 1)) * (v * p / (q - 1))) + (p * x / (p * x + q - 1)) * m
 
-    def fit(self, frequency, monetary_value, iterative_fitting=5, initial_params=None, verbose=False):
+    def fit(self, frequency, monetary_value, iterative_fitting=5, initial_params=None, verbose=False, exp_scale = 0.5):
         """
         This methods fits the data to the Gamma/Gamma model.
 
@@ -273,6 +273,8 @@ class GammaGammaFitter(BaseFitter):
                 hurt estimates. This model is not very stable so we suggest >10 for best estimates evaluation.
             initial_params: set initial params for the iterative fitter.
             verbose: set to true to print out convergence diagnostics.
+            exp_scale: if initial params are not set, we can set the scale factor for the exponential
+                function that generates the initial values
 
         Returns:
             self, fitted and with parameters estimated
@@ -282,7 +284,8 @@ class GammaGammaFitter(BaseFitter):
                                                       iterative_fitting,
                                                       initial_params,
                                                       3,
-                                                      verbose)
+                                                      verbose,
+                                                      exp_scale = exp_scale)
 
         self.data = DataFrame(vconcat[frequency, monetary_value], columns=['frequency', 'monetary_value'])
         self.params_ = OrderedDict(zip(['p', 'q', 'v'], params))
